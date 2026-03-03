@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DILEMATORS - Digital Learning Module</title>
+    <style>
+        :root {
+            --primary-blue: #4a90e2;
+            --text-color: #2c3e50;
+            --bg-gradient: linear-gradient(180deg, #e0f2fe 0%, #ffffff 100%);
+            --success-green: #2eaf6d;
+            --gray-text: #666;
+            --dark-gray: #444;
+            --light-blue-border: #b3e5fc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* --- MODAL DIALOG AWAL --- */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 85%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalPop 0.3s ease-out;
+        }
+        .modal-content h2 { color: var(--primary-blue); margin: 0 0 10px 0; }
+        .modal-content p { font-size: 14px; line-height: 1.5; margin: 0 0 25px 0; }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- CONTAINER UTAMA --- */
+        .phone-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 480px;
+            background: white;
+            border: 10px solid #333;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        :fullscreen .phone-container {
+            max-width: 100vw; max-height: 100vh; height: 100vh; border: none; border-radius: 0;
+        }
+        :-webkit-full-screen .phone-container {
+            max-width: 100vw; max-height: 100vh; height: 100vh; border: none; border-radius: 0;
+        }
+
+        /* --- STYLING LAYAR --- */
+        .screen {
+            display: none;
+            height: 100%;
+            width: 100%;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        #home {
+          max-height: 100vh;
+          overflow: hidden;
+        }
+
+        /* --- HOME --- */
+        .logo-img { width: 60%; max-width: 320px; height: auto; margin-bottom: 0px; }
+        .subtitle { font-size: 16px; line-height: 1.3; font-weight: bold; color: #555; margin:0; }
+        .aktor-container { display: flex; justify-content: center; align-items: flex-end; width: 100%; margin-bottom: 0px; }
+        .aktor-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; width: 15%; margin: 0 5px}
+        .aktor-img { width: 100%; height: auto; }
+
+        /* --- LOGIN & CARDS --- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px; border-radius: 20px;
+            border: 2px solid var(--light-blue-border); width: 85%; max-width: 360px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .header-login { color: var(--primary-blue); margin: 0 0 15px 0; }
+        .text-login-info { font-size: 11px; color: var(--gray-text); margin: 10px 0; }
+        .link-register { font-size: 12px; color: var(--primary-blue); text-decoration: none; margin-top: 15px; display: block; }
+        
+        input {
+            width: 100%; padding: 10px; margin: 8px 0;
+            border-radius: 10px; border: 1px solid var(--light-blue-border);
+            box-sizing: border-box; background: #f1f8ff; font-size: 14px;
+        }
+
+        /* --- INSTRUCTION --- */
+        .header-instruksi { text-align: left; width: 100%; color: var(--dark-gray); margin: 0 0 15px 0; }
+        .content-instruksi { text-align: left; width: 100%; font-size: 15px; line-height: 1.7; color: #555; }
+        .mt-25 { margin-top: 25px; }
+
+        /* --- MENU --- */
+        .header-menu { margin: 0 0 10px 0; }
+        .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin: 15px 0; }
+        .menu-card {
+            background: white; border-radius: 15px; padding: 15px 10px;
+            border: 1px solid #e0e0e0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-size: 12px; font-weight: bold; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .menu-card:hover { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.08); }
+        .placeholder-img { font-size: 32px; margin-bottom: 8px; }
+
+        /* --- RESULTS --- */
+        .header-hasil { margin: 0 0 10px 0; }
+        .text-success { color: var(--success-green); font-size: 14px; font-weight: bold; margin: 0; }
+        .result-container { width: 100%; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 5px; }
+        .result-row { display: flex; justify-content: space-between; width: 48%; margin: 6px 0; font-size: 14px; }
+        .stars { color: #ffca28; }
+        .progress-container { width: 95%; background: #e0e0e0; border-radius: 10px; margin: 15px 0; }
+        .progress-fill { width: 100%; height: 12px; background: #4db6ac; border-radius: 10px; }
+
+        /* --- BUTTONS --- */
+        .btn-main {
+            background: linear-gradient(to bottom, #4db6ac, #00796b);
+            color: white; border: 2px solid #fff; padding: 10px 40px; border-radius: 25px;
+            font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 0 #004d40;
+            transition: 0.1s ease; text-shadow: 0 1px 1px rgba(0,0,0,0.2); white-space: nowrap;
+        }
+        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0 #004d40; }
+        .mt-15 { margin-top: 15px; }
+
+        /* --- TOAST --- */
+        .toast {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%); background: rgba(0,0,0,0.85);
+            color: white; padding: 12px 24px; border-radius: 20px;
+            font-size: 13px; opacity: 0; transition: 0.3s ease; z-index: 9999;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div id="modal-overlay">
+    <div class="modal-content">
+        <h2>Selamat Datang!</h2>
+        <p>Untuk pengalaman belajar terbaik, modul ini akan ditampilkan secara <b>Penuh (Fullscreen)</b> dalam mode <b>Landscape</b>.</p>
+        <button class="btn-main" onclick="startApp()">Masuk Sekarang ➔</button>
+    </div>
+</div>
+
+<div class="phone-container">
+    <div id="home" class="screen active">
+        <img class="logo-img" src="assets/logo.png" alt="DILEMATORS Logo">
+        <p class="subtitle">DIGITAL LEARNING MODULE FOR<br>MANIPULATIF MOTOR SKILLS</p>
+        <div class="aktor-container">
+           <div class="aktor-wrapper"><img src="assets/girl.png" alt="Karakter Perempuan" class="aktor-img"></div>
+           <div class="aktor-wrapper"><img src="assets/robot.png" alt="Karakter Robot" class="aktor-img"></div>
+           <div class="aktor-wrapper"><img src="assets/boy.png" alt="Karakter Laki-laki" class="aktor-img"></div>
+        </div>
+        <button class="btn-main" onclick="goTo('login')">Mulai Belajar ➔</button>
+    </div>
+
+    <div id="login" class="screen">
+        <h2 class="header-login">LOGIN</h2>
+        <div class="login-card">
+            <input type="text" id="username" placeholder="Nama Pengguna" value="coba">
+            <input type="password" id="password" placeholder="Kata Sandi" value="coba">
+            <p class="text-login-info">Ayo temukan kemampuan motorikmu bersama Dilemators!</p>
+            <button class="btn-main" onclick="validateLogin()">Masuk ➔</button>
+            <a href="#" onclick="showToast('Halaman pendaftaran sedang dikembangkan')" class="link-register">Daftar Akun Baru</a>
+        </div>
+    </div>
+
+    <div id="instruksi" class="screen">
+        <h3 class="header-instruksi">Instruksi Pembelajaran</h3>
+        <div class="content-instruksi">
+            <p>1️⃣ Baca tujuan pembelajaran dengan saksama.</p>
+            <p>2️⃣ Tonton video demonstrasi gerak.</p>
+            <p>3️⃣ Lakukan latihan mandiri sesuai petunjuk.</p>
+            <p>4️⃣ Kerjakan evaluasi akhir untuk melihat hasil.</p>
+        </div>
+        <button class="btn-main mt-25" onclick="goTo('menu')">Lanjut ke Menu ➔</button>
+    </div>
+
+    <div id="menu" class="screen">
+        <h4 class="header-menu">Pilih Unit Gerak Manipulatif</h4>
+        <div class="grid-menu">
+            <div class="menu-card" onclick="showToast('Membuka Unit Mengoper')"><div class="placeholder-img">⚽</div>Mengoper</div>
+            <div class="menu-card" onclick="showToast('Membuka Unit Menangkap')"><div class="placeholder-img">👐</div>Menangkap</div>
+            <div class="menu-card" onclick="showToast('Membuka Unit Menendang')"><div class="placeholder-img">🦵</div>Menendang</div>
+            <div class="menu-card" onclick="showToast('Membuka Unit Menggiring')"><div class="placeholder-img">🏃</div>Menggiring</div>
+            <div class="menu-card" onclick="showToast('Membuka Unit Memukul')"><div class="placeholder-img">🏏</div>Memukul</div>
+            <div class="menu-card" onclick="showToast('Membuka Unit Lempar Bawah')"><div class="placeholder-img">🥎</div>Lempar Bawah</div>
+        </div>
+        <button class="btn-main mt-15" onclick="goTo('hasil')">Lihat Ringkasan Hasil ➔</button>
+    </div>
+
+    <div id="hasil" class="screen">
+        <h3 class="header-hasil">RINGKASAN HASIL BELAJAR</h3>
+        <p class="text-success">✅ Hebat! Kamu telah menyelesaikan unit!</p>
+        <div class="progress-container"><div class="progress-fill"></div></div>
+        <div class="result-container">
+            <div class="result-row"><span>Mengoper</span><span class="stars">★★★★★</span></div>
+            <div class="result-row"><span>Menangkap</span><span class="stars">★★★★★</span></div>
+            <div class="result-row"><span>Menendang</span><span class="stars">★★★★★</span></div>
+            <div class="result-row"><span>Menggiring</span><span class="stars">★★★★★</span></div>
+            <div class="result-row"><span>Memukul</span><span class="stars">★★★★★</span></div>
+            <div class="result-row"><span>Lempar Bawah</span><span class="stars">★★★★★</span></div>
+        </div>
+        <button class="btn-main mt-25" onclick="exitApp()">Selesai & Keluar</button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+</div>
+
+<script>
+    function startApp() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) { elem.requestFullscreen(); } 
+        else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
+        else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
+
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(err => {
+                console.log("Lock orientasi gagal:", err);
+            });
+        }
+
+        const modal = document.getElementById('modal-overlay');
+        if (modal) {
+            modal.style.display = "none";
+            setTimeout(() => modal.remove(), 300);
+        }
+    }
+
+    function goTo(id) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+            s.scrollTop = 0;
+        });
+        const target = document.getElementById(id);
+        if (target) { target.classList.add('active'); }
+    }
+
+    function exitApp() { goTo('home'); }
+
+    function validateLogin() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        if (user === 'coba' && pass === 'coba') {
+            showToast('Login berhasil! Selamat belajar.');
+            setTimeout(() => goTo('instruksi'), 800);
+        } else {
+            showToast('Nama pengguna atau kata sandi salah!');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 2500);
+    }
+</script>
+</body>
+</html>
